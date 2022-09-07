@@ -1,4 +1,4 @@
-package io.movie.ratingdataservice.models;
+package io.movie.moviecatalogservice.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

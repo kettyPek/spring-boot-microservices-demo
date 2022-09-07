@@ -1,5 +1,7 @@
 package io.movie.ratingdataservice.models;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,11 +9,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class Rating {
+@AllArgsConstructor
+public class UserRating {
 	
-	protected String movieId;
-	protected int rating;
+	protected List<Rating> ratings;
 
 }

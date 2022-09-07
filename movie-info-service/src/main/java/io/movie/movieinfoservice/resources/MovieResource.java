@@ -10,9 +10,9 @@ import io.movie.movieinfoservice.models.Movie;
 @RequestMapping("/movies")
 public class MovieResource {
 	
-//	@RequestMapping("/{movieId}")
-//	public Movie getMovieInfo(@PathVariable String movieId) {
-//		
-//	}
+	@RequestMapping("/{movieId}")
+	public Movie getMovieInfo(@PathVariable String movieId) {
+		return new Movie("111","movie");
+	}
 
 }
