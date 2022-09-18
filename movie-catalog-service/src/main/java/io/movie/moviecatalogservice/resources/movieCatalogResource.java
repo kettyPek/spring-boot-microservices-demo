@@ -1,5 +1,6 @@
 package io.movie.moviecatalogservice.resources;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,8 @@ import io.movie.moviecatalogservice.models.Movie;
 import io.movie.moviecatalogservice.models.Rating;
 import io.movie.moviecatalogservice.models.UserRating;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 @RestController
 @RequestMapping("/catalog")
 public class movieCatalogResource {
@@ -26,32 +29,39 @@ public class movieCatalogResource {
 	WebClient.Builder webClientBuilder;
 
 	// RestTemplate
-	@RequestMapping("/{userId}") 
+	@RequestMapping("/{userId}")
+	@CircuitBreaker(name = "getCatalog", fallbackMethod = "getCatalogFallback")
 	public List<CatalogItem> getCatalog(@PathVariable String userId) {
-	  
-		List<Rating> ratings = restTemplate.getForObject("http://rating-data-service/ratings/user/" +userId, UserRating.class).getRatings();
-		  
-		return ratings.stream().map(rating -> { 
-			Movie movie = restTemplate.getForObject("http://movie-info-service/movies/" +rating.getMovieId(), Movie.class);
-			return new CatalogItem(movie.getName(),"des", rating.getRating()); 
-			}).collect(Collectors.toList());
-	  
+
+		List<Rating> ratings = restTemplate
+				.getForObject("http://rating-data-service/ratings/user/" + userId, UserRating.class).getRatings();
+
+		return ratings.stream().map(rating -> {
+			Movie movie = restTemplate.getForObject("http://movie-info-service/movies/" + rating.getMovieId(),
+					Movie.class);
+			return new CatalogItem(movie.getName(), "des", rating.getRating());
+		}).collect(Collectors.toList());
+
+	}
+	
+	public List<CatalogItem> getCatalogFallback(Exception e) {
+		
+		return Arrays.asList(new CatalogItem("no movie","",0));
 	}
 
 	// WebClient
 	/*
-	@RequestMapping("/{userId}")
-	public List<CatalogItem> getCatalog(@PathVariable String userId) {
-
-		List<Rating> ratings = Arrays.asList(new Rating("123", 5), new Rating("124", 6));
-
-		return ratings.stream().map(rating -> {
-			Movie movie = webClientBuilder.build()
-					.get().uri("http://localhost:8082/movies/" + rating.getMovieId())
-					.retrieve().bodyToMono(Movie.class).block();
-			return new CatalogItem(movie.getName(), "des", rating.getRating());
-		}).collect(Collectors.toList());
-	}
-	*/
+	 * @RequestMapping("/{userId}") public List<CatalogItem>
+	 * getCatalog(@PathVariable String userId) {
+	 * 
+	 * List<Rating> ratings = Arrays.asList(new Rating("123", 5), new Rating("124",
+	 * 6));
+	 * 
+	 * return ratings.stream().map(rating -> { Movie movie =
+	 * webClientBuilder.build() .get().uri("http://localhost:8082/movies/" +
+	 * rating.getMovieId()) .retrieve().bodyToMono(Movie.class).block(); return new
+	 * CatalogItem(movie.getName(), "des", rating.getRating());
+	 * }).collect(Collectors.toList()); }
+	 */
 
 }
