@@ -7,12 +7,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class Movie {
-
-	protected String movieId;
-	protected String name;
-	protected String description;
+@AllArgsConstructor
+public class MovieSummary {
+	
+	private String id;
+    private String title;
+    private String overview;
 
 }
